@@ -1,0 +1,14 @@
+# We need to be careful here to pick exactly what the Hexagon SDK requires.
+# Reference: http://events.linuxfoundation.org/sites/events/files/slides/Using%20Openembedded%20with%20Snapdragon%20Flight.pdf
+# Reference: https://github.com/ATLFlight/cross_toolchain/blob/master/installsdk.sh
+
+BR2_TOOLCHAIN_EXTERNAL=y
+BR2_TOOLCHAIN_EXTERNAL_CUSTOM=y
+BR2_TOOLCHAIN_EXTERNAL_DOWNLOAD=y
+BR2_TOOLCHAIN_EXTERNAL_URL="https://releases.linaro.org/archive/14.11/components/toolchain/binaries/arm-linux-gnueabihf/gcc-linaro-4.9-2014.11-x86_64_arm-linux-gnueabihf.tar.xz"
+BR2_TOOLCHAIN_EXTERNAL_CUSTOM_PREFIX="arm-linux-gnueabihf"
+BR2_TOOLCHAIN_EXTERNAL_GCC_4_9=y
+BR2_TOOLCHAIN_EXTERNAL_HEADERS_3_17=y
+BR2_TOOLCHAIN_EXTERNAL_CUSTOM_GLIBC=y
+BR2_TOOLCHAIN_EXTERNAL_CXX=y
+BR2_USE_MMU=y

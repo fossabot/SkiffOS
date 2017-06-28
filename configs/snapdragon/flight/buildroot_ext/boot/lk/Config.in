@@ -1,0 +1,16 @@
+config BR2_TARGET_LK
+	bool "Little-kernel"
+	help
+	  Build "Little Kernel" Boot Loader
+
+#if BR2_TARGET_LK
+
+config BR2_TARGET_LK_BOARDNAME
+	string "LK board name"
+	help
+	  One of lk supported board targets to be built.
+
+config BR2_TARGET_LK_TARBALL_LOCATION
+	string "URL of Lk sources tarball"
+
+#endif

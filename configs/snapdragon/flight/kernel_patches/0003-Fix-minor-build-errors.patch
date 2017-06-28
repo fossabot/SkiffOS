@@ -1,0 +1,205 @@
+From 18611d8fa2f89c886905ba3403a6b4fac66deaf7 Mon Sep 17 00:00:00 2001
+From: Christian Stewart <christian@paral.in>
+Date: Tue, 13 Jun 2017 17:01:12 -0700
+Subject: [PATCH 3/6] Fix minor build errors
+
+ - Fix msm smd_init_dt include path
+ - Fix build errors in mem.c
+ - Fix build errors in sound
+ - Fix build errors in msm (various)
+
+Signed-off-by: Christian Stewart <christian@paral.in>
+---
+ Makefile                                                    | 5 +++--
+ arch/arm/mach-msm/smd_init_dt.c                             | 2 +-
+ drivers/char/mem.c                                          | 3 +--
+ drivers/cpufreq/cpufreq_interactive.c                       | 3 ++-
+ drivers/crypto/msm/qcedev.c                                 | 2 ++
+ drivers/media/platform/msm/camera_v2/isp/msm_isp_axi_util.c | 1 -
+ drivers/media/platform/msm/camera_v2/ispif/msm_ispif.c      | 2 +-
+ drivers/misc/qseecom.c                                      | 2 --
+ drivers/usb/gadget/u_serial.c                               | 2 +-
+ scripts/gcc-wrapper.py                                      | 4 ++--
+ sound/soc/msm/qdsp6v2/q6adm.c                               | 2 +-
+ sound/soc/msm/qdsp6v2/rtac.c                                | 5 +++--
+ 12 files changed, 17 insertions(+), 16 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 0c11d69..4afd97f 100644
+--- a/Makefile
++++ b/Makefile
+@@ -370,9 +370,10 @@ KBUILD_CPPFLAGS := -D__KERNEL__
+ 
+ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
+ 		   -fno-strict-aliasing -fno-common \
+-		   -Werror-implicit-function-declaration \
+ 		   -Wno-format-security \
+-		   -fno-delete-null-pointer-checks
++		   -fno-delete-null-pointer-checks \
++		   -Wno-error \
++		   -Werror-implicit-function-declaration
+ KBUILD_AFLAGS_KERNEL :=
+ KBUILD_CFLAGS_KERNEL :=
+ KBUILD_AFLAGS   := -D__ASSEMBLY__
+diff --git a/arch/arm/mach-msm/smd_init_dt.c b/arch/arm/mach-msm/smd_init_dt.c
+index 640656c..046f447 100644
+--- a/arch/arm/mach-msm/smd_init_dt.c
++++ b/arch/arm/mach-msm/smd_init_dt.c
+@@ -21,7 +21,7 @@
+ #include <linux/io.h>
+ 
+ #include <mach/msm_ipc_logging.h>
+-#include <smd_private.h>
++#include "smd_private.h"
+ 
+ #define MODULE_NAME "msm_smd"
+ #define IPC_LOG(level, x...) do { \
+diff --git a/drivers/char/mem.c b/drivers/char/mem.c
+index fffbdb5..8e0ac81 100644
+--- a/drivers/char/mem.c
++++ b/drivers/char/mem.c
+@@ -101,10 +101,9 @@ static int get_lock(void)
+ 	return -1;
+ }
+ 
+-static void release_lock()
++static void release_lock(void)
+ {
+ 	atomic_set(mem_lock, 1);
+-	return 0;
+ }
+ 
+ #define LOCK_MEM	1
+diff --git a/drivers/cpufreq/cpufreq_interactive.c b/drivers/cpufreq/cpufreq_interactive.c
+index 1cfa9db..19a60f4 100644
+--- a/drivers/cpufreq/cpufreq_interactive.c
++++ b/drivers/cpufreq/cpufreq_interactive.c
+@@ -844,7 +844,8 @@ static ssize_t show_above_hispeed_delay(
+ 		ret += sprintf(buf + ret, "%u%s", above_hispeed_delay[i],
+ 			       i & 0x1 ? ":" : " ");
+ 
+-	ret += sprintf(buf + --ret, "\n");
++  ret--;
++	ret += sprintf(buf + ret, "\n");
+ 	spin_unlock_irqrestore(&above_hispeed_delay_lock, flags);
+ 	return ret;
+ }
+diff --git a/drivers/crypto/msm/qcedev.c b/drivers/crypto/msm/qcedev.c
+index d476805..2e489b9 100644
+--- a/drivers/crypto/msm/qcedev.c
++++ b/drivers/crypto/msm/qcedev.c
+@@ -35,7 +35,9 @@
+ #include <linux/qcedev.h>
+ #include "qce.h"
+ 
++#ifndef U32_MAX
+ #define	U32_MAX	((u32)(~0U))
++#endif
+ #define CACHE_LINE_SIZE 32
+ #define CE_SHA_BLOCK_SIZE SHA256_BLOCK_SIZE
+ 
+diff --git a/drivers/media/platform/msm/camera_v2/isp/msm_isp_axi_util.c b/drivers/media/platform/msm/camera_v2/isp/msm_isp_axi_util.c
+index b545177..40295e8 100644
+--- a/drivers/media/platform/msm/camera_v2/isp/msm_isp_axi_util.c
++++ b/drivers/media/platform/msm/camera_v2/isp/msm_isp_axi_util.c
+@@ -27,7 +27,6 @@ static int msm_isp_axi_create_stream(
+ 	struct vfe_device *vfe_dev,
+ 	struct msm_vfe_axi_stream_request_cmd *stream_cfg_cmd)
+ {
+-	int rc = -1;
+ 	struct msm_vfe_axi_shared_data *axi_data = &vfe_dev->axi_data;
+ 	int i = stream_cfg_cmd->stream_src;
+ 
+diff --git a/drivers/media/platform/msm/camera_v2/ispif/msm_ispif.c b/drivers/media/platform/msm/camera_v2/ispif/msm_ispif.c
+index 72a1574..11ab08f 100755
+--- a/drivers/media/platform/msm/camera_v2/ispif/msm_ispif.c
++++ b/drivers/media/platform/msm/camera_v2/ispif/msm_ispif.c
+@@ -780,7 +780,7 @@ static int msm_ispif_stop_immediately(struct ispif_device *ispif,
+ 
+ static int msm_ispif_reconfig_3d_output(struct ispif_device *ispif,enum msm_ispif_vfe_intf vfe_id)
+ {
+-	uint32_t reg_data, input_sel_data;
++	uint32_t reg_data;
+ 	BUG_ON(!ispif);
+ 
+ 	if (!( (vfe_id == VFE0) ||  (vfe_id == VFE1))){
+diff --git a/drivers/misc/qseecom.c b/drivers/misc/qseecom.c
+index 02e1ee67..8e47c63 100644
+--- a/drivers/misc/qseecom.c
++++ b/drivers/misc/qseecom.c
+@@ -1375,8 +1375,6 @@ static int qseecom_send_service_cmd(struct qseecom_dev_handle *data,
+ 	struct qseecom_client_send_service_ireq send_svc_ireq;
+ 	struct qseecom_command_scm_resp resp;
+ 	struct qseecom_send_svc_cmd_req req;
+-	void   *send_req_ptr;
+-	size_t req_buf_size;
+ 
+ 	/*struct qseecom_command_scm_resp resp;*/
+ 
+diff --git a/drivers/usb/gadget/u_serial.c b/drivers/usb/gadget/u_serial.c
+index 2c2bce1..5eaeb69 100644
+--- a/drivers/usb/gadget/u_serial.c
++++ b/drivers/usb/gadget/u_serial.c
+@@ -1293,7 +1293,7 @@ static void usb_debugfs_init(struct gs_port *ui_dev, int port_num)
+ 	char buf[48];
+ 
+ 	if (!ui_dev)
+-	return -EINVAL;
++		return;
+ 	
+ 	snprintf(buf, 48, "usb_serial%d", port_num);
+ 	gs_dent = debugfs_create_dir(buf, 0);
+diff --git a/scripts/gcc-wrapper.py b/scripts/gcc-wrapper.py
+index 548d655..d246205 100755
+--- a/scripts/gcc-wrapper.py
++++ b/scripts/gcc-wrapper.py
+@@ -77,8 +77,8 @@ def run_gcc():
+     try:
+         proc = subprocess.Popen(args, stderr=subprocess.PIPE)
+         for line in proc.stderr:
+-            print line,
+-            interpret_warning(line)
++            print line# ,
++            #interpret_warning(line)
+ 
+         result = proc.wait()
+     except OSError as e:
+diff --git a/sound/soc/msm/qdsp6v2/q6adm.c b/sound/soc/msm/qdsp6v2/q6adm.c
+index 9f0d077..c0beb76 100644
+--- a/sound/soc/msm/qdsp6v2/q6adm.c
++++ b/sound/soc/msm/qdsp6v2/q6adm.c
+@@ -750,7 +750,7 @@ void send_adm_custom_topology(int port_id)
+ 		adm_top.payload_size);
+ 	result = apr_send_pkt(this_adm.apr, (uint32_t *)&adm_top);
+ 	if (result < 0) {
+-		pr_err("%s: Set topologies failed port = 0x%pK payload = 0x%x\n",
++		pr_err("%s: Set topologies failed port = %d payload = %p\n",
+ 			__func__, port_id, &cal_block.cal_paddr);
+ 		goto done;
+ 	}
+diff --git a/sound/soc/msm/qdsp6v2/rtac.c b/sound/soc/msm/qdsp6v2/rtac.c
+index 3fd18b3..95e93bb 100644
+--- a/sound/soc/msm/qdsp6v2/rtac.c
++++ b/sound/soc/msm/qdsp6v2/rtac.c
+@@ -25,7 +25,8 @@
+ #include <sound/q6asm-v2.h>
+ #include <sound/q6afe-v2.h>
+ #include <sound/apr_audio-v2.h>
+-#include <q6voice.h>
++
++#include "q6voice.h"
+ #include "audio_acdb.h"
+ 
+ 
+@@ -207,7 +208,7 @@ int rtac_allocate_cal_buffer(uint32_t cal_type)
+ 	pr_debug("%s: cal_type %d, paddr 0x%pK, kvaddr 0x%pK, map_size 0x%x\n",
+ 		__func__, cal_type,
+ 		&rtac_cal[cal_type].cal_data.paddr,
+-		rtac_cal[cal_type].cal_data.kvaddr,
++		&rtac_cal[cal_type].cal_data.kvaddr,
+ 		rtac_cal[cal_type].map_data.map_size);
+ done:
+ 	return result;
+-- 
+2.10.2
+

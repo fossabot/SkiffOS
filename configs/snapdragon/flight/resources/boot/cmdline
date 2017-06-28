@@ -1,0 +1,1 @@
+console=ttyHSL0,115200,n8 root=/dev/mmcblk0p13 rootwait ro prim_display=hdmi_msm net.ifnames=0 no_console_suspend

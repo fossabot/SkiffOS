@@ -1,0 +1,4 @@
+config BR2_PACKAGE_HOST_PLATFORM_SYSTEM_CORE
+	bool "host platform system core tools"
+	help
+	  Build the host qualcomm platform system core tools.

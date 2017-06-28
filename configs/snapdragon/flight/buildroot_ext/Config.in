@@ -1,0 +1,2 @@
+source "$BR2_EXTERNAL_SNAPDRAGON_FLIGHT_PATH/boot/lk/Config.in"
+source "$BR2_EXTERNAL_SNAPDRAGON_FLIGHT_PATH/package/platform-system-core/Config.in.host"

@@ -1,0 +1,43 @@
+From 212b4203befceafd9d1ad5f1936afe9b4ecae36b Mon Sep 17 00:00:00 2001
+From: Christian Stewart <christian@paral.in>
+Date: Tue, 27 Jun 2017 11:34:29 -0700
+Subject: [PATCH 5/6] drivers/gud: fix mobicore_driver include path
+
+Signed-off-by: Christian Stewart <christian@paral.in>
+---
+ drivers/gud/Makefile | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/gud/Makefile b/drivers/gud/Makefile
+index ef0e083..b6acc87 100644
+--- a/drivers/gud/Makefile
++++ b/drivers/gud/Makefile
+@@ -2,6 +2,8 @@
+ # Makefile for the kernel mobicore drivers
+ #
+ GUD_ROOT_FOLDER := drivers/gud
++GUD_ROOT_PATH := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
++
+ # add our modules to kernel.
+ obj-$(CONFIG_MOBICORE_API) += mckernelapi.o
+ obj-$(CONFIG_MOBICORE_SUPPORT) += mcdrvmodule.o
+@@ -20,14 +22,14 @@ mckernelapi-objs := mobicore_kernelapi/main.o \
+ 		mobicore_kernelapi/connection.o
+ 
+ # Release mode by default
+-ccflags-y := -DNDEBUG -include $(PWD)/$(GUD_ROOT_FOLDER)/mobicore_driver/build_tag.h
++ccflags-y := -DNDEBUG -include $(GUD_ROOT_PATH)/mobicore_driver/build_tag.h
+ ccflags-y += -Wno-declaration-after-statement
+ 
+ ccflags-$(CONFIG_MOBICORE_DEBUG) += -DDEBUG
+ ccflags-$(CONFIG_MOBICORE_VERBOSE) += -DDEBUG_VERBOSE
+ 
+ # Choose one platform from the folder
+-MOBICORE_PLATFORM := $(shell (ls -1 $(PWD)/$(GUD_ROOT_FOLDER)/mobicore_driver/platforms | tail -1) )
++MOBICORE_PLATFORM := $(shell (ls -1 $(GUD_ROOT_PATH)/mobicore_driver/platforms | tail -1) )
+ # Use the available platform folder
+ ccflags-y += -I$(GUD_ROOT_FOLDER)/mobicore_driver/platforms/$(MOBICORE_PLATFORM)
+ 
+-- 
+2.10.2
+

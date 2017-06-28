@@ -96,6 +96,7 @@ TMP_FILE=$(mktemp ./.tmp.config.XXXXXXXXXX)
 
 echo "Using $INITFILE as base"
 cat $INITFILE > $TMP_FILE
+printf "\n" >> $TMP_FILE
 
 # Merge files, printing warnings on overridden values
 for MERGE_FILE in $MERGE_LIST ; do
@@ -117,6 +118,7 @@ for MERGE_FILE in $MERGE_LIST ; do
 		sed -i "/$CFG[ =]/d" $TMP_FILE
 	done
 	cat $MERGE_FILE >> $TMP_FILE
+  printf "\n" >> $TMP_FILE
 done
 
 if [ "$RUNMAKE" = "false" ]; then

@@ -1,0 +1,24 @@
+From a0536c02194134adfbecc4ccc12a594d255243d5 Mon Sep 17 00:00:00 2001
+From: Christian Stewart <christian@paral.in>
+Date: Wed, 28 Jun 2017 13:18:06 -0700
+Subject: [PATCH 6/6] change msm-id of eagle dts to match flight board
+
+---
+ arch/arm/boot/dts/apq8074pro-ab-eagle-p2.dts | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm/boot/dts/apq8074pro-ab-eagle-p2.dts b/arch/arm/boot/dts/apq8074pro-ab-eagle-p2.dts
+index 82f8105..585fbb4 100644
+--- a/arch/arm/boot/dts/apq8074pro-ab-eagle-p2.dts
++++ b/arch/arm/boot/dts/apq8074pro-ab-eagle-p2.dts
+@@ -19,6 +19,7 @@
+ 	model = "Qualcomm Technologies APQ 8074Pro-AB EAGLE P2";
+ 	compatible = "qcom,apq8074-eagle", "qcom,apq8074", "qcom,eagle";
+ 	qcom,board-id = <0x2001c 0>;
++  qcom,msm-id = <209 28 0x10001>;
+ };
+ 
+ &sdhc_1 {
+-- 
+2.10.2
+

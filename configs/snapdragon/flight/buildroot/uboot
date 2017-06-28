@@ -1,0 +1,8 @@
+#
+# Bootloaders
+# Code: https://source.codeaurora.org/quic/la/kernel/lk/log/?h=LNX.LER.1.0
+#
+# BR2_TARGET_UBOOT is not set
+BR2_TARGET_LK=y
+BR2_TARGET_LK_BOARDNAME="msm8974"
+BR2_TARGET_LK_TARBALL_LOCATION="https://github.com/paralin/lk/archive/snapdragon/flight/snapdragon-flight-lk.tar.gz"

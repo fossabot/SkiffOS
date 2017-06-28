@@ -1,0 +1,28 @@
+From 56024b62c12fa0a142f1124850a5b51afdfd1c93 Mon Sep 17 00:00:00 2001
+From: frantisheq <frantisheq@gmail.com>
+Date: Tue, 10 Mar 2015 12:59:45 +0100
+Subject: [PATCH 2/6] cpufreq: interactive: fix compiling warnings
+
+When using sabermod toolchain the gcc warns like:
+
+cpufreq_interactive.c:745:6: warning: operation on 'ret' may be undefined [-Wsequence-point]
+---
+ drivers/cpufreq/cpufreq_interactive.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/cpufreq/cpufreq_interactive.c b/drivers/cpufreq/cpufreq_interactive.c
+index 3a964a5..1cfa9db 100644
+--- a/drivers/cpufreq/cpufreq_interactive.c
++++ b/drivers/cpufreq/cpufreq_interactive.c
+@@ -801,7 +801,7 @@ static ssize_t show_target_loads(
+ 		ret += sprintf(buf + ret, "%u%s", target_loads[i],
+ 			       i & 0x1 ? ":" : " ");
+ 
+-	ret += sprintf(buf + --ret, "\n");
++	sprintf(buf + ret - 1, "\n");
+ 	spin_unlock_irqrestore(&target_loads_lock, flags);
+ 	return ret;
+ }
+-- 
+2.10.2
+
